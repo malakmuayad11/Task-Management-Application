@@ -43,3 +43,11 @@ export function updateVersion(newVersion) {
   data.version = newVersion;
   localStorage.setItem("data", JSON.stringify(data));
 }
+
+export function getLatestTaskId(version) {
+  const data = getData(version);
+
+  return data.tasks.reduce((maxId, task) => {
+    return Math.max(maxId, task.id);
+  }, 0);
+}
