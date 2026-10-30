@@ -1,0 +1,60 @@
+<body>
+  <header class="header">
+    <img class="header__logo" src="" alt="" />
+    <h1 class="header__title">Task Manager</h1>
+  </header>
+
+  <main class="task-manager">
+    <!-- Page heading -->
+    <section class="task-manager__intro">
+      <div class="task-manager__intro-content">
+        <h2 class="task-manager__title">All Tasks</h2>
+        <p class="task-manager__description">
+          Manage your tasks and stay productive!
+        </p>
+      </div>
+
+      <button class="task-manager__add-button">+ Add Task</button>
+    </section>
+
+    <!-- Statistics -->
+    <section class="task-stats">
+      <div class="task-stats__card">
+        <h3 class="task-stats__title">Total Tasks</h3>
+        <p class="task-stats__value"></p>
+      </div>
+
+      <div class="task-stats__card">
+        <h3 class="task-stats__title">Completed</h3>
+        <p class="task-stats__value"></p>
+      </div>
+
+      <div class="task-stats__card">
+        <h3 class="task-stats__title">Pending</h3>
+        <p class="task-stats__value"></p>
+      </div>
+
+      <div class="task-stats__card task-stats__card--high-priority">
+        <h3 class="task-stats__title">High Priority</h3>
+        <p class="task-stats__value"></p>
+      </div>
+    </section>
+
+    <!-- Tasks table -->
+    <section class="task-list">
+      <table class="task-list__table">
+        <thead class="task-list__header">
+          <tr class="task-list__row">
+            <th class="task-list__cell task-list__cell--checkbox">
+              <input type="checkbox" class="task-list__checkbox" />
+            </th>
+            <th class="task-list__cell">Task</th>
+            <th class="task-list__cell">Priority</th>
+            <th class="task-list__cell">Status</th>
+            <th class="task-list__cell">Actions</th>
+          </tr>
+        </thead>
+      </table>
+    </section>
+  </main>
+</body>
