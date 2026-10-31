@@ -1,11 +1,12 @@
 import { Actions } from "./actions.js";
-import { AddTaskCommand } from "./AddTaskCommand.js";
-import { DeleteTaskCommand } from "./DeleteTaskCommand.js";
-import { getData, updateData } from "./persistence.js";
-import { Task } from "./task.js";
-import { UpdateTaskCommand } from "./UpdateTaskCommand.js";
+import { getData } from "./persistence.js";
+import { loadStatistics } from "./statistics.js";
+import { dragover } from "./drag&drop.js";
+import { handleAddTask, handleEditTask } from "./handlers.js";
+import { sortTasks, filterByPriority, search, undo, redo } from "./controls.js";
+import { loadTasks } from "./render.js";
 
-const UI = {
+export const UI = {
   addTaskBtn: document.getElementById("addTaskBtn"),
 
   // Statistics
@@ -39,250 +40,13 @@ const UI = {
   editCloseBtn: document.getElementById("editCloseBtn"),
 };
 
-const CURRENT_VERSION = 1;
+export const CURRENT_VERSION = 1;
 
-let data = getData(CURRENT_VERSION);
-
-const actions = new Actions(20);
-
-// ==============================
-// Statistics
-// ==============================
-
-function loadStatistics() {
-  UI.totalTasks.textContent = data.tasks.length;
-
-  UI.completedTasks.textContent = data.tasks.reduce(
-    (acc, current) => (current.isCompleted ? acc + 1 : acc),
-    0,
-  );
-
-  UI.pendingTasks.textContent = data.tasks.reduce(
-    (acc, current) => (current.isCompleted ? acc : acc + 1),
-    0,
-  );
-
-  UI.highPriorityTasks.textContent = data.tasks.reduce(
-    (acc, current) => (current.priority === "high" ? acc + 1 : acc),
-    0,
-  );
-}
+export const data = getData(CURRENT_VERSION);
 
 let currentTaskId;
 
-// ==============================
-// Drag and Drop
-// ==============================
-
-function dragStart(e) {
-  e.dataTransfer.setData("text/plain", e.target.dataset.taskId);
-  e.target.classList.add("dragging");
-}
-
-function updateTasksOrder() {
-  const newOrder = [...UI.tasksTableBody.querySelectorAll("tr")].map((row) =>
-    Number(row.dataset.taskId),
-  );
-
-  data.tasks.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
-
-  updateData(CURRENT_VERSION, data.tasks);
-}
-
-function dragEnd(e) {
-  e.target.classList.remove("dragging");
-
-  updateTasksOrder();
-}
-
-function dragover(e) {
-  e.preventDefault();
-
-  const draggingRow = document.querySelector(".dragging");
-
-  if (!draggingRow) return;
-
-  const siblings = [...UI.tasksTableBody.querySelectorAll("tr:not(.dragging)")];
-
-  const nextSibling = siblings.find((sibling) => {
-    const box = sibling.getBoundingClientRect();
-    const boxCenter = box.top + box.height / 2;
-
-    return e.clientY <= boxCenter;
-  });
-
-  UI.tasksTableBody.insertBefore(draggingRow, nextSibling);
-}
-
-// ==============================
-// Load Tasks
-// ==============================
-
-function loadTasks(tasks) {
-  tasks.forEach((t) => {
-    const tr = document.createElement("tr");
-
-    tr.dataset.taskId = t.id;
-
-    tr.addEventListener("dragstart", dragStart);
-    tr.addEventListener("dragend", dragEnd);
-
-    tr.draggable = true;
-
-    // Completion checkbox
-    const checkboxCell = document.createElement("td");
-
-    const isCompleted = document.createElement("input");
-
-    isCompleted.type = "checkbox";
-    isCompleted.checked = t.isCompleted;
-
-    checkboxCell.appendChild(isCompleted);
-    tr.appendChild(checkboxCell);
-
-    // Title
-    const title = document.createElement("td");
-
-    title.textContent = t.title;
-
-    tr.appendChild(title);
-
-    // Priority
-    const priority = document.createElement("td");
-
-    priority.textContent = t.priority;
-
-    tr.appendChild(priority);
-
-    // Status
-    const status = document.createElement("td");
-
-    status.textContent = t.isCompleted ? "Completed" : "Pending";
-
-    tr.appendChild(status);
-
-    // Actions
-    const actions = document.createElement("td");
-
-    const deleteBtn = document.createElement("button");
-
-    deleteBtn.type = "button";
-    deleteBtn.textContent = "Delete";
-
-    deleteBtn.addEventListener("click", () => handleDeleteTask(t.id));
-
-    const editBtn = document.createElement("button");
-
-    editBtn.type = "button";
-    editBtn.textContent = "Edit";
-
-    editBtn.addEventListener("click", () => {
-      currentTaskId = t.id;
-      UI.editTaskModel.showModal();
-    });
-
-    actions.appendChild(deleteBtn);
-    actions.appendChild(editBtn);
-
-    tr.appendChild(actions);
-
-    UI.tasksTableBody.appendChild(tr);
-  });
-}
-
-// ==============================
-// Refresh
-// ==============================
-
-function refresh() {
-  data = getData(CURRENT_VERSION);
-
-  UI.tasksTableBody.innerHTML = "";
-
-  loadTasks(data.tasks);
-  loadStatistics();
-}
-
-// ==============================
-// Add Task
-// ==============================
-
-function handleAddTask() {
-  const title = UI.addTitle.value.trim();
-
-  if (!title) return;
-
-  const addCommand = new AddTaskCommand(
-    title,
-    UI.addPriority.value,
-    CURRENT_VERSION,
-  );
-
-  addCommand.execute();
-  actions.pushUndo(addCommand);
-
-  UI.addTaskModal.close();
-  refresh();
-
-  UI.addTitle.value = "";
-}
-
-// ==============================
-// Delete Task
-// ==============================
-
-function handleDeleteTask(taskId) {
-  const deleteCommand = new DeleteTaskCommand(taskId, CURRENT_VERSION);
-  deleteCommand.execute();
-  actions.pushUndo(deleteCommand);
-  refresh();
-}
-
-function handleEditTask(taskId) {
-  const status = UI.editStatus.value.toLowerCase() === "completed";
-  const updateCommand = new UpdateTaskCommand(
-    taskId,
-    new Task(taskId, UI.editTitle.value.trim(), UI.editPriority.value, status),
-    CURRENT_VERSION,
-  );
-  updateCommand.execute();
-  actions.pushUndo(updateCommand);
-  refresh();
-
-  UI.editTaskModel.close();
-}
-
-// ==============================
-// Sort Tasks
-// ==============================
-
-function sortTasks() {
-  data = getData(CURRENT_VERSION);
-
-  UI.tasksTableBody.innerHTML = "";
-
-  if (UI.sort.checked) {
-    data.tasks.sort((a, b) => a.title.localeCompare(b.title));
-  }
-
-  loadTasks(data.tasks);
-}
-
-// ==============================
-// Filter Tasks
-// ==============================
-
-function filterByPriority() {
-  data = getData(CURRENT_VERSION);
-
-  UI.tasksTableBody.innerHTML = "";
-
-  const filteredTasks = UI.filter.value
-    ? data.tasks.filter((t) => t.priority === UI.filter.value)
-    : data.tasks;
-
-  loadTasks(filteredTasks);
-}
+export const actions = new Actions(20);
 
 // ==============================
 // Debounce
@@ -301,53 +65,12 @@ function debounce(callback, delay = 300) {
 }
 
 // ==============================
-// Search Tasks
-// ==============================
-
-function search(e) {
-  data = getData(CURRENT_VERSION);
-
-  UI.tasksTableBody.innerHTML = "";
-
-  const value = e.target.value.trim().toLowerCase();
-
-  const filteredTasks = data.tasks.filter((t) =>
-    t.title.toLowerCase().includes(value),
-  );
-
-  loadTasks(filteredTasks);
-}
-
-// ==============================
-// Undo Action
-// ==============================
-
-function undo() {
-  const command = actions.popUndo();
-  command.undo();
-  actions.pushRedo(command);
-  refresh();
-}
-
-// ==============================
-// Redo Action
-// ==============================
-function redo() {
-  const command = actions.popRedo();
-  command.execute();
-  actions.pushUndo(command);
-  refresh();
-}
-
-// ==============================
 // Event Listeners
 // ==============================
 
 document.addEventListener("DOMContentLoaded", () => {
-  data = getData(CURRENT_VERSION);
-
   loadTasks(data.tasks);
-  loadStatistics();
+  loadStatistics(data);
 });
 
 UI.sort.addEventListener("change", sortTasks);

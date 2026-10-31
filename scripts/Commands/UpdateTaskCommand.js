@@ -1,5 +1,5 @@
 import { Command } from "./Command.js";
-import { getTask, updateTask } from "./persistence.js";
+import { getTask, updateTask } from "../persistence.js";
 
 export class UpdateTaskCommand extends Command {
   #originalTask;

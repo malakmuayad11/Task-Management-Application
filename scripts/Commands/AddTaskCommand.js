@@ -1,6 +1,6 @@
 import { Command } from "./Command.js";
-import { getLatestTaskId, addTask, deleteTask } from "./persistence.js";
-import { Task } from "./task.js";
+import { getLatestTaskId, addTask, deleteTask } from "../persistence.js";
+import { Task } from "../task.js";
 
 export class AddTaskCommand extends Command {
   #id;
