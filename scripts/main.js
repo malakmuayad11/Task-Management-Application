@@ -41,7 +41,8 @@ const UI = {
   editCloseBtn: document.getElementById("editCloseBtn"),
 };
 
-let data = getData(1);
+const currentVersion = 1;
+let data = getData(currentVersion);
 
 // ==============================
 // Statistics
@@ -84,7 +85,7 @@ function updateTasksOrder() {
 
   data.tasks.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
 
-  updateData(1, data.tasks);
+  updateData(currentVersion, data.tasks);
 }
 
 function dragEnd(e) {
@@ -193,7 +194,7 @@ function loadTasks(tasks) {
 // ==============================
 
 function refresh() {
-  data = getData(1);
+  data = getData(currentVersion);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -211,7 +212,7 @@ function handleAddTask() {
   if (!title) return;
 
   addTask(
-    1,
+    currentVersion,
     new Task(getLatestTaskId(1) + 1, title, UI.addPriority.value, false),
   );
 
@@ -227,7 +228,7 @@ function handleAddTask() {
 // ==============================
 
 function handleDeleteTask(taskId) {
-  deleteTask(1, taskId);
+  deleteTask(currentVersion, taskId);
 
   refresh();
 }
@@ -235,7 +236,7 @@ function handleDeleteTask(taskId) {
 function handleEditTask(taskId) {
   const status = UI.editStatus.value.toLowerCase() === "completed";
   updateTask(
-    1,
+    currentVersion,
     taskId,
     new Task(taskId, UI.editTitle.value.trim(), UI.editPriority.value, status),
   );
@@ -249,7 +250,7 @@ function handleEditTask(taskId) {
 // ==============================
 
 function sortTasks() {
-  data = getData(1);
+  data = getData(currentVersion);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -265,7 +266,7 @@ function sortTasks() {
 // ==============================
 
 function filterByPriority() {
-  data = getData(1);
+  data = getData(currentVersion);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -297,7 +298,7 @@ function debounce(callback, delay = 300) {
 // ==============================
 
 function search(e) {
-  data = getData(1);
+  data = getData(currentVersion);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -315,7 +316,7 @@ function search(e) {
 // ==============================
 
 document.addEventListener("DOMContentLoaded", () => {
-  data = getData(1);
+  data = getData(currentVersion);
 
   loadTasks(data.tasks);
   loadStatistics();

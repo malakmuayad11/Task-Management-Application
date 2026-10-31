@@ -30,18 +30,34 @@ export function getTasks() {
 }
 
 export function getData(version) {
-  return (
-    JSON.parse(localStorage.getItem("data")) || {
+  const data = JSON.parse(localStorage.getItem("data"));
+  if (data === null) {
+    const initialData = {
       version,
       tasks: [],
-    }
-  );
+    };
+
+    localStorage.setItem("data", JSON.stringify(initialData));
+
+    return initialData;
+  }
+  // Suppose that we add the priority property
+  if (data.version < version) {
+    data.tasks = data.tasks.map((t) => ({
+      ...t,
+      priority: t.priority ?? "normal",
+    }));
+    data.version = version;
+    updateVersion(version, data.tasks);
+  }
+  return data;
 }
 
-export function updateVersion(newVersion) {
-  const data = getData(newVersion - 1);
-  data.version = newVersion;
-  localStorage.setItem("data", JSON.stringify(data));
+export function updateVersion(newVersion, newTasks) {
+  localStorage.setItem(
+    "data",
+    JSON.stringify({ version: newVersion, tasks: newTasks }),
+  );
 }
 
 export function getLatestTaskId(version) {
@@ -50,8 +66,4 @@ export function getLatestTaskId(version) {
   return data.tasks.reduce((maxId, task) => {
     return Math.max(maxId, task.id);
   }, 0);
-}
-
-export function updateData(version, tasks) {
-  localStorage.setItem("data", JSON.stringify({ version, tasks }));
 }
