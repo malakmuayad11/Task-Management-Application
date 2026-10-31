@@ -1,4 +1,4 @@
-import { Actions } from "./actions.js";
+import { Actions } from "./Actions.js";
 import { getData } from "./persistence.js";
 import { loadStatistics } from "./statistics.js";
 import { dragover } from "./drag&drop.js";
