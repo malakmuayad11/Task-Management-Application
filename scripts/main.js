@@ -1,13 +1,9 @@
-import {
-  addTask,
-  deleteTask,
-  getData,
-  getLatestTaskId,
-  updateData,
-  updateTask,
-} from "./persistence.js";
-
+import { Actions } from "./actions.js";
+import { AddTaskCommand } from "./AddTaskCommand.js";
+import { DeleteTaskCommand } from "./DeleteTaskCommand.js";
+import { getData, updateData } from "./persistence.js";
 import { Task } from "./task.js";
+import { UpdateTaskCommand } from "./UpdateTaskCommand.js";
 
 const UI = {
   addTaskBtn: document.getElementById("addTaskBtn"),
@@ -24,6 +20,8 @@ const UI = {
   sort: document.getElementById("sort"),
   filter: document.getElementById("filter"),
   search: document.getElementById("search"),
+  undoBtn: document.getElementById("undo"),
+  redoBtn: document.getElementById("redo"),
 
   // Add task modal
   addTaskModal: document.getElementById("addTaskModal"),
@@ -41,8 +39,11 @@ const UI = {
   editCloseBtn: document.getElementById("editCloseBtn"),
 };
 
-const currentVersion = 1;
-let data = getData(currentVersion);
+const CURRENT_VERSION = 1;
+
+let data = getData(CURRENT_VERSION);
+
+const actions = new Actions(20);
 
 // ==============================
 // Statistics
@@ -85,7 +86,7 @@ function updateTasksOrder() {
 
   data.tasks.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
 
-  updateData(currentVersion, data.tasks);
+  updateData(CURRENT_VERSION, data.tasks);
 }
 
 function dragEnd(e) {
@@ -194,7 +195,7 @@ function loadTasks(tasks) {
 // ==============================
 
 function refresh() {
-  data = getData(currentVersion);
+  data = getData(CURRENT_VERSION);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -211,14 +212,17 @@ function handleAddTask() {
 
   if (!title) return;
 
-  addTask(
-    currentVersion,
-    new Task(getLatestTaskId(1) + 1, title, UI.addPriority.value, false),
+  const addCommand = new AddTaskCommand(
+    title,
+    UI.addPriority.value,
+    CURRENT_VERSION,
   );
 
-  refresh();
+  addCommand.execute();
+  actions.pushUndo(addCommand);
 
   UI.addTaskModal.close();
+  refresh();
 
   UI.addTitle.value = "";
 }
@@ -228,18 +232,21 @@ function handleAddTask() {
 // ==============================
 
 function handleDeleteTask(taskId) {
-  deleteTask(currentVersion, taskId);
-
+  const deleteCommand = new DeleteTaskCommand(taskId, CURRENT_VERSION);
+  deleteCommand.execute();
+  actions.pushUndo(deleteCommand);
   refresh();
 }
 
 function handleEditTask(taskId) {
   const status = UI.editStatus.value.toLowerCase() === "completed";
-  updateTask(
-    currentVersion,
+  const updateCommand = new UpdateTaskCommand(
     taskId,
     new Task(taskId, UI.editTitle.value.trim(), UI.editPriority.value, status),
+    CURRENT_VERSION,
   );
+  updateCommand.execute();
+  actions.pushUndo(updateCommand);
   refresh();
 
   UI.editTaskModel.close();
@@ -250,7 +257,7 @@ function handleEditTask(taskId) {
 // ==============================
 
 function sortTasks() {
-  data = getData(currentVersion);
+  data = getData(CURRENT_VERSION);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -266,7 +273,7 @@ function sortTasks() {
 // ==============================
 
 function filterByPriority() {
-  data = getData(currentVersion);
+  data = getData(CURRENT_VERSION);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -298,7 +305,7 @@ function debounce(callback, delay = 300) {
 // ==============================
 
 function search(e) {
-  data = getData(currentVersion);
+  data = getData(CURRENT_VERSION);
 
   UI.tasksTableBody.innerHTML = "";
 
@@ -312,11 +319,32 @@ function search(e) {
 }
 
 // ==============================
+// Undo Action
+// ==============================
+
+function undo() {
+  const command = actions.popUndo();
+  command.undo();
+  actions.pushRedo(command);
+  refresh();
+}
+
+// ==============================
+// Redo Action
+// ==============================
+function redo() {
+  const command = actions.popRedo();
+  command.execute();
+  actions.pushUndo(command);
+  refresh();
+}
+
+// ==============================
 // Event Listeners
 // ==============================
 
 document.addEventListener("DOMContentLoaded", () => {
-  data = getData(currentVersion);
+  data = getData(CURRENT_VERSION);
 
   loadTasks(data.tasks);
   loadStatistics();
@@ -329,6 +357,10 @@ UI.filter.addEventListener("change", filterByPriority);
 const debouncedSearch = debounce(search);
 
 UI.search.addEventListener("input", debouncedSearch);
+
+UI.undoBtn.addEventListener("click", undo);
+
+UI.redoBtn.addEventListener("click", redo);
 
 UI.addTaskBtn.addEventListener("click", () => {
   UI.addTaskModal.showModal();

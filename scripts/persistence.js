@@ -67,3 +67,22 @@ export function getLatestTaskId(version) {
     return Math.max(maxId, task.id);
   }, 0);
 }
+
+// This method is used for updating data after reordering
+export function updateData(version, updatedTasks) {
+  const data = getData(version);
+
+  data.tasks = updatedTasks;
+
+  localStorage.setItem("data", JSON.stringify(data));
+}
+
+export function getTask(version, taskId) {
+  const data = getData(version);
+
+  if (data !== null) {
+    return data.tasks.find((t) => t.id === taskId) ?? null;
+  }
+
+  return null;
+}
