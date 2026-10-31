@@ -51,3 +51,7 @@ export function getLatestTaskId(version) {
     return Math.max(maxId, task.id);
   }, 0);
 }
+
+export function updateData(version, tasks) {
+  localStorage.setItem("data", JSON.stringify({ version, tasks }));
+}

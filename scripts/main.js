@@ -3,6 +3,7 @@ import {
   deleteTask,
   getData,
   getLatestTaskId,
+  updateData,
 } from "./persistence.js";
 import { Task } from "./task.js";
 
@@ -46,9 +47,33 @@ function loadStatistics() {
   }, 0);
 }
 
+function dragStart(e) {
+  e.dataTransfer.setData("text/plain", e.target.dataset.id);
+  e.target.classList.add("dragging");
+}
+
+function updateTasksOrder() {
+  const newOrder = [...UI.tasksTableBody.querySelectorAll("tr")].map((row) =>
+    Number(row.dataset.taskId),
+  );
+
+  data.tasks.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+
+  updateData(1, data.tasks);
+}
+
+function dragEnd(e) {
+  e.target.classList.remove("dragging");
+  updateTasksOrder();
+}
+
 function loadTasks() {
   data.tasks.forEach((t) => {
     const tr = document.createElement("tr");
+    tr.dataset.taskId = t.id;
+    tr.addEventListener("dragstart", dragStart);
+    tr.addEventListener("dragend", dragEnd);
+    tr.draggable = true;
     const isCompleted = document.createElement("input");
     isCompleted.type = "checkbox";
     isCompleted.checked = t.isCompleted;
@@ -133,3 +158,20 @@ UI.addSave.addEventListener("click", handleAddTask);
 
 UI.addCloseBtn.addEventListener("click", () => UI.addTaskModal.close());
 UI.editCloseBtn.addEventListener("click", () => UI.editTaskModel.close());
+
+UI.tasksTableBody.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  const draggingRow = document.querySelector(".dragging");
+  // Get all table rows inside the tbody except the one being dragged
+  const siblings = [...UI.tasksTableBody.querySelectorAll("tr:not(.dragging)")];
+
+  // Find the row the cursor is currently over
+  const nextSibling = siblings.find((sibling) => {
+    const box = sibling.getBoundingClientRect();
+    const boxCenter = box.top + box.height / 2;
+    return e.clientY <= boxCenter;
+  });
+
+  // Insert the moving row before the target sibling row
+  UI.tasksTableBody.insertBefore(draggingRow, nextSibling);
+});
