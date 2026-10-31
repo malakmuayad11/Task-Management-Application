@@ -1,139 +1,148 @@
-<body>
-  <header class="header" id="header">
-    <img class="header__logo" id="headerLogo" src="" alt="" />
-    <h1 class="header__title" id="headerTitle">Task Manager</h1>
-  </header>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <header class="header" id="header">
+      <img class="header__logo" id="headerLogo" src="" alt="" />
+      <h1 class="header__title" id="headerTitle">Task Manager</h1>
+    </header>
 
-  <main class="task-manager" id="taskManager">
-    <!-- Page heading -->
-    <section class="task-manager__intro" id="taskIntro">
-      <div class="task-manager__intro-content">
-        <h2 class="task-manager__title" id="pageTitle">All Tasks</h2>
-        <p class="task-manager__description" id="pageDescription">
-          Manage your tasks and stay productive!
-        </p>
-      </div>
-
-      <button class="task-manager__add-button" id="addTaskBtn" type="button">
-        + Add Task
-      </button>
-    </section>
-
-    <!-- Statistics -->
-    <section class="task-stats" id="taskStats">
-      <div class="task-stats__card">
-        <h3 class="task-stats__title">Total Tasks</h3>
-        <p class="task-stats__value" id="totalTasks">0</p>
-      </div>
-
-      <div class="task-stats__card">
-        <h3 class="task-stats__title">Completed</h3>
-        <p class="task-stats__value" id="completedTasks">0</p>
-      </div>
-
-      <div class="task-stats__card">
-        <h3 class="task-stats__title">Pending</h3>
-        <p class="task-stats__value" id="pendingTasks">0</p>
-      </div>
-
-      <div class="task-stats__card task-stats__card--high-priority">
-        <h3 class="task-stats__title">High Priority</h3>
-        <p class="task-stats__value" id="highPriorityTasks">0</p>
-      </div>
-    </section>
-
-    <!-- Tasks table -->
-    <section class="task-list" id="taskList">
-      <div>
-        <h2>Your Tasks</h2>
-        <div>
-          <input type="checkbox" name="sort" id="sort" />
-          <label for="sort">Sort (A-Z)</label>
+    <main class="task-manager" id="taskManager">
+      <!-- Page heading -->
+      <section class="task-manager__intro" id="taskIntro">
+        <div class="task-manager__intro-content">
+          <h2 class="task-manager__title" id="pageTitle">All Tasks</h2>
+          <p class="task-manager__description" id="pageDescription">
+            Manage your tasks and stay productive!
+          </p>
         </div>
-        <div>
-          <label for="filter">Filter by Priority</label>
-          <select name="filter" id="filter" required>
-            <option value="" selected disabled hidden>Select a Filter</option>
-            <option value="high">High</option>
-            <option value="normal">Normal</option>
-            <option value="law">Law</option>
-          </select>
-        </div>
-        <div>
-          <input type="search" name="search" id="search" />
-        </div>
-      </div>
-      <table class="task-list__table" id="tasksTable">
-        <thead class="task-list__header">
-          <tr class="task-list__row">
-            <th class="task-list__cell task-list__cell--checkbox">
-              <input
-                type="checkbox"
-                class="task-list__checkbox"
-                id="selectAllTasks"
-                aria-label="Select all tasks"
-              />
-            </th>
-            <th class="task-list__cell">Task</th>
-            <th class="task-list__cell">Priority</th>
-            <th class="task-list__cell">Status</th>
-            <th class="task-list__cell">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tasksTableBody">
-          <!-- Task rows will be generated dynamically using JavaScript -->
-        </tbody>
-      </table>
-    </section>
 
-    <dialog id="addTaskModal">
-      <h2>Add New Task</h2>
+        <button class="task-manager__add-button" id="addTaskBtn" type="button">
+          + Add Task
+        </button>
+      </section>
 
-      <form method="dialog">
-        <div>
-          <label for="addTitle">Title:</label>
-          <input type="text" name="title" id="addTitle" />
+      <!-- Statistics -->
+      <section class="task-stats" id="taskStats">
+        <div class="task-stats__card">
+          <h3 class="task-stats__title">Total Tasks</h3>
+          <p class="task-stats__value" id="totalTasks">0</p>
         </div>
-        <div>
-          <label for="addPriority">Priority:</label>
-          <select name="priority" id="addPriority">
-            <option value="normal">Normal</option>
-            <option value="high">High</option>
-            <option value="law">Law</option>
-          </select>
-        </div>
-        <button type="button" id="addCloseBtn">Close</button>
-        <button type="submit" id="addSave">Save</button>
-      </form>
-    </dialog>
 
-    <dialog id="editTaskModal">
-      <h2>Edit Task</h2>
+        <div class="task-stats__card">
+          <h3 class="task-stats__title">Completed</h3>
+          <p class="task-stats__value" id="completedTasks">0</p>
+        </div>
 
-      <form method="dialog">
-        <div>
-          <label for="editTitle">Title:</label>
-          <input type="text" name="title" id="editTitle" />
+        <div class="task-stats__card">
+          <h3 class="task-stats__title">Pending</h3>
+          <p class="task-stats__value" id="pendingTasks">0</p>
         </div>
-        <div>
-          <label for="editPriority">Priority:</label>
-          <select name="priority" id="editPriority">
-            <option value="normal">Normal</option>
-            <option value="high">High</option>
-            <option value="law">Law</option>
-          </select>
+
+        <div class="task-stats__card task-stats__card--high-priority">
+          <h3 class="task-stats__title">High Priority</h3>
+          <p class="task-stats__value" id="highPriorityTasks">0</p>
         </div>
+      </section>
+
+      <!-- Tasks table -->
+      <section class="task-list" id="taskList">
         <div>
-          <label for="editStatus">Status:</label>
-          <select name="editStatus" id="editStatus">
-            <option value="true">Completed</option>
-            <option value="false">Pending</option>
-          </select>
+          <h2>Your Tasks</h2>
+          <div>
+            <input type="checkbox" name="sort" id="sort" />
+            <label for="sort">Sort (A-Z)</label>
+          </div>
+          <div>
+            <label for="filter">Filter by Priority</label>
+            <select name="filter" id="filter" required>
+              <option value="" selected disabled hidden>Select a Filter</option>
+              <option value="high">High</option>
+              <option value="normal">Normal</option>
+              <option value="law">Law</option>
+            </select>
+          </div>
+          <div>
+            <input type="search" name="search" id="search" />
+          </div>
         </div>
-        <button type="button" id="editCloseBtn">Close</button>
-        <button type="submit" id="editSave">Save</button>
-      </form>
-    </dialog>
-  </main>
-  <script type="module" src="./scripts/main.js"></script>
-</body>
+        <table class="task-list__table" id="tasksTable">
+          <thead class="task-list__header">
+            <tr class="task-list__row">
+              <th class="task-list__cell task-list__cell--checkbox">
+                <input
+                  type="checkbox"
+                  class="task-list__checkbox"
+                  id="selectAllTasks"
+                  aria-label="Select all tasks"
+                />
+              </th>
+              <th class="task-list__cell">Task</th>
+              <th class="task-list__cell">Priority</th>
+              <th class="task-list__cell">Status</th>
+              <th class="task-list__cell">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tasksTableBody">
+            <!-- Task rows will be generated dynamically using JavaScript -->
+          </tbody>
+        </table>
+      </section>
+
+      <dialog id="addTaskModal">
+        <h2>Add New Task</h2>
+
+        <form method="dialog">
+          <div>
+            <label for="addTitle">Title:</label>
+            <input type="text" name="title" id="addTitle" />
+          </div>
+          <div>
+            <label for="addPriority">Priority:</label>
+            <select name="priority" id="addPriority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="law">Law</option>
+            </select>
+          </div>
+          <button type="button" id="addCloseBtn">Close</button>
+          <button type="submit" id="addSave">Save</button>
+        </form>
+      </dialog>
+
+      <dialog id="editTaskModal">
+        <h2>Edit Task</h2>
+
+        <form method="dialog">
+          <div>
+            <label for="editTitle">Title:</label>
+            <input type="text" name="title" id="editTitle" />
+          </div>
+          <div>
+            <label for="editPriority">Priority:</label>
+            <select name="priority" id="editPriority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="law">Law</option>
+            </select>
+          </div>
+          <div>
+            <label for="editStatus">Status:</label>
+            <select name="editStatus" id="editStatus">
+              <option value="true">Completed</option>
+              <option value="false">Pending</option>
+            </select>
+          </div>
+          <button type="button" id="editCloseBtn">Close</button>
+          <button type="submit" id="editSave">Save</button>
+        </form>
+      </dialog>
+    </main>
+    <script type="module" src="./scripts/main.js"></script>
+  </body>
+</html>
