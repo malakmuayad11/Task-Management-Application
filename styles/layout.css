@@ -1,0 +1,34 @@
+.task-manager {
+  width: min(1100px, 92%);
+  margin: var(--space-6) auto;
+}
+
+.task-manager__intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.task-manager__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.task-manager__description {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+}
+
+.task-manager__add-button {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+}
+
+.task-manager__add-button:hover {
+  background: var(--color-primary-hover);
+}
