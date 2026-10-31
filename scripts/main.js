@@ -18,6 +18,9 @@ const UI = {
   // Tasks table
   tasksTableBody: document.getElementById("tasksTableBody"),
 
+  sort: document.getElementById("sort"),
+  filter: document.getElementById("filter"),
+
   addTaskModal: document.getElementById("addTaskModal"),
   addTitle: document.getElementById("addTitle"),
   addPriority: document.getElementById("addPriority"),
@@ -102,8 +105,28 @@ function handleDeleteTask(taskId) {
   refresh();
 }
 
+function sortTasks() {
+  UI.tasksTableBody.innerHTML = "";
+  if (UI.sort.checked) {
+    data.tasks.sort((a, b) => a.title.localeCompare(b.title));
+  } else {
+    data = getData(1);
+  }
+  loadTasks();
+}
+
+function filterByPriority() {
+  data = getData(1);
+  UI.tasksTableBody.innerHTML = "";
+  data.tasks = data.tasks.filter((t) => t.priority === UI.filter.value);
+  loadTasks();
+}
+
 document.addEventListener("DOMContentLoaded", loadTasks);
 document.addEventListener("DOMContentLoaded", loadStatistics);
+
+UI.sort.addEventListener("change", sortTasks);
+UI.filter.addEventListener("change", filterByPriority);
 
 UI.addTaskBtn.addEventListener("click", () => UI.addTaskModal.showModal());
 UI.addSave.addEventListener("click", handleAddTask);

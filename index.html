@@ -44,6 +44,22 @@
 
     <!-- Tasks table -->
     <section class="task-list" id="taskList">
+      <div>
+        <h2>Your Tasks</h2>
+        <div>
+          <input type="checkbox" name="sort" id="sort" />
+          <label for="sort">Sort (A-Z)</label>
+        </div>
+        <div>
+          <label for="filter">Filter by Priority</label>
+          <select name="filter" id="filter" required>
+            <option value="" selected disabled hidden>Select a Filter</option>
+            <option value="high">High</option>
+            <option value="normal">Normal</option>
+            <option value="law">Law</option>
+          </select>
+        </div>
+      </div>
       <table class="task-list__table" id="tasksTable">
         <thead class="task-list__header">
           <tr class="task-list__row">
