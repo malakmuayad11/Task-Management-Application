@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Task Manager</title>
+    <link rel="stylesheet" href="./styles/main.css" />
   </head>
   <body>
     <header class="header" id="header">
@@ -66,7 +67,12 @@
               <option value="law">Law</option>
             </select>
           </div>
-          <input type="search" name="search" id="search" />
+          <input
+            type="search"
+            name="search"
+            id="search"
+            placeholder="Search for a task..."
+          />
           <div>
             <button id="undo">Undo</button>
             <button id="redo">Redo</button>
@@ -81,6 +87,7 @@
                   class="task-list__checkbox"
                   id="selectAllTasks"
                   aria-label="Select all tasks"
+                  disabled
                 />
               </th>
               <th class="task-list__cell">Task</th>

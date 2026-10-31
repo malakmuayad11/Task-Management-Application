@@ -4,6 +4,8 @@ import { DeleteTaskCommand } from "./Commands/DeleteTaskCommand.js";
 import { UpdateTaskCommand } from "./Commands/UpdateTaskCommand.js";
 import { Task } from "./task.js";
 import { refresh } from "./render.js";
+import { currentTaskId, setCurrentTaskId } from "./state.js";
+import { getTask } from "./persistence.js";
 
 export function handleAddTask() {
   const title = UI.addTitle.value.trim();
@@ -32,16 +34,45 @@ export function handleDeleteTask(taskId) {
   refresh();
 }
 
-export function handleEditTask(taskId) {
-  const status = UI.editStatus.value.toLowerCase() === "completed";
+export function handleEditTask() {
+  if (currentTaskId === null) return;
+
+  const title = UI.editTitle.value.trim();
+
+  if (!title) return;
+
+  const status = UI.editStatus.value === "completed";
+
   const updateCommand = new UpdateTaskCommand(
-    taskId,
-    new Task(taskId, UI.editTitle.value.trim(), UI.editPriority.value, status),
+    currentTaskId,
+    new Task(currentTaskId, title, UI.editPriority.value, status),
     CURRENT_VERSION,
   );
+
   updateCommand.execute();
   actions.pushUndo(updateCommand);
+
   refresh();
 
-  UI.editTaskModel.close();
+  UI.editTaskModal.close();
+  setCurrentTaskId(null);
+}
+
+export function handleUpdateTaskStatus(isCompleted) {
+  if (currentTaskId === null) return;
+
+  const task = getTask(CURRENT_VERSION, currentTaskId);
+
+  const updateCommand = new UpdateTaskCommand(
+    currentTaskId,
+    new Task(currentTaskId, task.title, task.priority, isCompleted),
+    CURRENT_VERSION,
+  );
+
+  updateCommand.execute();
+
+  actions.pushUndo(updateCommand);
+
+  refresh();
+  setCurrentTaskId(null);
 }

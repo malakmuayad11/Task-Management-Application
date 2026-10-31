@@ -32,7 +32,7 @@ export const UI = {
   addCloseBtn: document.getElementById("addCloseBtn"),
 
   // Edit task modal
-  editTaskModel: document.getElementById("editTaskModal"),
+  editTaskModal: document.getElementById("editTaskModal"),
   editTitle: document.getElementById("editTitle"),
   editPriority: document.getElementById("editPriority"),
   editStatus: document.getElementById("editStatus"),
@@ -95,10 +95,10 @@ UI.addCloseBtn.addEventListener("click", () => {
   UI.addTaskModal.close();
 });
 
-UI.editSave.addEventListener("click", () => handleEditTask(currentTaskId));
+UI.editSave.addEventListener("click", () => handleEditTask());
 
 UI.editCloseBtn.addEventListener("click", () => {
-  UI.editTaskModel.close();
+  UI.editTaskModal.close();
 });
 
 UI.tasksTableBody.addEventListener("dragover", dragover);
@@ -112,8 +112,8 @@ document.addEventListener("keydown", (e) => {
 
     if (UI.addTaskModal.open) {
       handleAddTask();
-    } else if (UI.editTaskModel.open) {
-      handleEditTask(currentTaskId);
+    } else if (UI.editTaskModal.open) {
+      handleEditTask();
     }
 
     return;
@@ -135,8 +135,8 @@ document.addEventListener("keydown", (e) => {
   if (e.key.toLocaleLowerCase() === "escape") {
     if (UI.addTaskModal.open) {
       UI.addTaskModal.close();
-    } else if (UI.editTaskModel.open) {
-      UI.editTaskModel.close();
+    } else if (UI.editTaskModal.open) {
+      UI.editTaskModal.close();
     }
     return;
   }

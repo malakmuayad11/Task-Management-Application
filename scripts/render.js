@@ -1,7 +1,11 @@
-import { UI, CURRENT_VERSION, data } from "./main.js";
+import { UI, CURRENT_VERSION } from "./main.js";
 import { getData } from "./persistence.js";
 import { loadStatistics } from "./statistics.js";
 import { dragStart, dragEnd } from "./drag&drop.js";
+import { handleDeleteTask, handleUpdateTaskStatus } from "./handlers.js";
+import { setCurrentTaskId } from "./state.js";
+
+let data;
 
 export function loadTasks(tasks) {
   tasks.forEach((t) => {
@@ -21,6 +25,11 @@ export function loadTasks(tasks) {
 
     isCompleted.type = "checkbox";
     isCompleted.checked = t.isCompleted;
+
+    isCompleted.addEventListener("change", (e) => {
+      setCurrentTaskId(t.id);
+      handleUpdateTaskStatus(e.target.checked);
+    });
 
     checkboxCell.appendChild(isCompleted);
     tr.appendChild(checkboxCell);
@@ -62,10 +71,14 @@ export function loadTasks(tasks) {
     editBtn.textContent = "Edit";
 
     editBtn.addEventListener("click", () => {
-      currentTaskId = t.id;
-      UI.editTaskModel.showModal();
-    });
+      setCurrentTaskId(t.id);
 
+      UI.editTitle.value = t.title;
+      UI.editPriority.value = t.priority;
+      UI.editStatus.value = t.isCompleted ? "completed" : "pending";
+
+      UI.editTaskModal.showModal();
+    });
     actions.appendChild(deleteBtn);
     actions.appendChild(editBtn);
 
