@@ -41,8 +41,7 @@ export function handleEditTask() {
 
   if (!title) return;
 
-  const status = UI.editStatus.value === "completed";
-
+  const status = UI.editStatus.value.toLowerCase() === "completed";
   const updateCommand = new UpdateTaskCommand(
     currentTaskId,
     new Task(currentTaskId, title, UI.editPriority.value, status),
